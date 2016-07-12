@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 HM Revenue & Customs
+ * Copyright 2016 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc
 
-import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
+import de.heikoseeberger.sbtheader.{HeaderPlugin, AutomateHeaderPlugin}
 import org.eclipse.jgit.lib.StoredConfig
 import sbt.Keys._
 import sbt._
@@ -45,12 +45,12 @@ object SbtAutoBuildPlugin extends AutoPlugin {
 
   override lazy val projectSettings = {
 
-    val addedSettings = Seq(
+    val addedSettings = Seq[Setting[_]](
       targetJvm := "jvm-1.8", //FIXME if this doesn't go here projects need to declare it
       headers := {
         if (autoSourceHeader.value) HeaderSettings() else Map.empty
       }
-    ) ++ defaultAutoSettings
+    ) ++ HeaderPlugin.settingsFor(IntegrationTest) ++ inConfig(IntegrationTest)(AutomateHeaderPlugin.automateFor(IntegrationTest)) ++ defaultAutoSettings
 
     logger.info(s"SbtAutoBuildPlugin adding ${addedSettings.size} build settings")
 
