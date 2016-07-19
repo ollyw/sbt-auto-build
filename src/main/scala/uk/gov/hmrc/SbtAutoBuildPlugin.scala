@@ -20,6 +20,7 @@ import de.heikoseeberger.sbtheader.{HeaderPlugin, AutomateHeaderPlugin}
 import org.eclipse.jgit.lib.StoredConfig
 import sbt.Keys._
 import sbt._
+import plugins.JvmPlugin
 
 object SbtAutoBuildPlugin extends AutoPlugin {
 
@@ -39,9 +40,9 @@ object SbtAutoBuildPlugin extends AutoPlugin {
       ArtefactDescription() ++
       Seq(autoSourceHeader := true)
 
-  override def requires = AutomateHeaderPlugin
+  override def requires = JvmPlugin && AutomateHeaderPlugin
 
-  override def trigger = noTrigger
+  override def trigger = allRequirements
 
   override lazy val projectSettings = {
 
@@ -52,7 +53,7 @@ object SbtAutoBuildPlugin extends AutoPlugin {
       }
     ) ++ HeaderPlugin.settingsFor(IntegrationTest) ++ inConfig(IntegrationTest)(AutomateHeaderPlugin.automateFor(IntegrationTest)) ++ defaultAutoSettings
 
-    logger.info(s"SbtAutoBuildPlugin adding ${addedSettings.size} build settings")
+    logger.info(s"---SbtAutoBuildPlugin adding\n$addedSettings\n ---End build settings")
 
     addedSettings
   }
